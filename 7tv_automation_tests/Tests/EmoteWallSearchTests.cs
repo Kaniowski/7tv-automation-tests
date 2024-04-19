@@ -1,5 +1,6 @@
 using _7tv_automation_tests.Fixtures;
 using _7tv_automation_tests.PageObjects;
+using OpenQA.Selenium;
 using Xunit.Abstractions;
 
 namespace _7tv_automation_tests.Tests
@@ -8,7 +9,7 @@ namespace _7tv_automation_tests.Tests
     {
         private readonly DriverFixture _fixture;
 
-        public static ITestOutputHelper TEST_OUTPUT;//static for simple lazy logging
+        private ITestOutputHelper TEST_OUTPUT;
         public EmoteWallSearchTests(DriverFixture testFixture, ITestOutputHelper testOutputHelper) 
         {
             _fixture = testFixture;
@@ -44,10 +45,10 @@ namespace _7tv_automation_tests.Tests
         //should add emoteid string as parameter here, to confirm that you found the right emote
         private void CompareResultsToSearchQuery_WithFilter(string searchQuery, string badResult, string filter)
         {
-            EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver);
+            EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver, TEST_OUTPUT);
 
             emoteWallPage.GoTo();
-            emoteWallPage.FillSearchBar(searchQuery);
+            emoteWallPage.UseSearchBar(searchQuery);
 
             emoteWallPage.ShowSearchFilters();
             emoteWallPage.ToggleSearchFilter(filter);
