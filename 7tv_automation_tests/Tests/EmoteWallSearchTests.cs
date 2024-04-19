@@ -1,4 +1,5 @@
 using _7tv_automation_tests.Fixtures;
+using _7tv_automation_tests.Helpers;
 using _7tv_automation_tests.PageObjects;
 using OpenQA.Selenium;
 using Xunit.Abstractions;
@@ -54,6 +55,25 @@ namespace _7tv_automation_tests.Tests
             emoteWallPage.ToggleSearchFilter(filter);
 
             Assert.False(emoteWallPage.CheckIfEmoteIsInSearchResult(badResult));
+        }
+
+
+
+        [Fact]
+        public void SearchFieldStringBounds_ShouldBeTruncated()
+        {
+            EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver, TEST_OUTPUT);
+           
+            emoteWallPage.GoTo();
+            IWebElement searchBar= emoteWallPage.UseSearchBar(DataHelper.longString);
+
+            //Thread.Sleep(3000);
+            //TEST_OUTPUT.WriteLine("DataHelper.longString.Length: " + DataHelper.longString.Length);
+            //TEST_OUTPUT.WriteLine("searchbar.value: " + searchBar.GetAttribute("value").Length);
+            //TEST_OUTPUT.WriteLine("url: " + _fixture.driver.Url);
+
+            //    Assert.False(searchBar.GetAttribute("value") == DataHelper.longString);
+            Assert.False(searchBar.GetAttribute("value").Length == DataHelper.longString.Length);
         }
     }
 }
