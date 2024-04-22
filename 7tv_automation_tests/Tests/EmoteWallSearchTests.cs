@@ -38,6 +38,7 @@ namespace _7tv_automation_tests.Tests
         [Fact]
         public void IgnoreTagsFilter_ShouldNotShowEmoteWithThisTag()
         {
+            //https://7tv.app/emotes/6042089e77137b000de9e669
             CompareResultsToSearchQuery_WithFilter("#xdddd", "OMEGALUL", "Ignore Tags");
 
         }
@@ -49,10 +50,12 @@ namespace _7tv_automation_tests.Tests
             EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver, TEST_OUTPUT);
 
             emoteWallPage.GoTo();
-            emoteWallPage.UseSearchBar(searchQuery);
-
             emoteWallPage.ShowSearchFilters();
             emoteWallPage.ToggleSearchFilter(filter);
+
+            emoteWallPage.UseEmoteSearchBar(searchQuery);
+
+
 
             Assert.False(emoteWallPage.CheckIfEmoteIsInSearchResult(badResult));
         }
@@ -65,7 +68,7 @@ namespace _7tv_automation_tests.Tests
             EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver, TEST_OUTPUT);
            
             emoteWallPage.GoTo();
-            IWebElement searchBar= emoteWallPage.UseSearchBar(DataHelper.longString);
+            IWebElement searchBar= emoteWallPage.UseEmoteSearchBar(DataForTests.longString);
 
             //Thread.Sleep(3000);
             //TEST_OUTPUT.WriteLine("DataHelper.longString.Length: " + DataHelper.longString.Length);
@@ -73,7 +76,11 @@ namespace _7tv_automation_tests.Tests
             //TEST_OUTPUT.WriteLine("url: " + _fixture.driver.Url);
 
             //    Assert.False(searchBar.GetAttribute("value") == DataHelper.longString);
-            Assert.False(searchBar.GetAttribute("value").Length == DataHelper.longString.Length);
+            string searchQuery = searchBar.GetAttribute("value");
+            if (searchQuery.Length == 0) { throw new Exception("the query probably failed completely"); }
+            Assert.False(searchQuery.Length == DataForTests.longString.Length);
         }
+
+        
     }
 }
