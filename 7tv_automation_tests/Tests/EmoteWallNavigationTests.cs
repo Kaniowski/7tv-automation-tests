@@ -27,24 +27,38 @@ namespace _7tv_automation_tests.Tests
         {
             EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver, TEST_OUTPUT);
             emoteWallPage.GoTo();
-
+            //need to wait for the emotes to actually load ugh
+            IReadOnlyList<IWebElement> firstPageEmotes = emoteWallPage.GetEmotes();
             //click last page button, get the emotes
             //click second to last pagebutton, get the emotes again
             emoteWallPage.NavigateToLastEmotePage();
-            IReadOnlyList<IWebElement> lastPageEmotes = emoteWallPage.GetEmotes();
+            emoteWallPage.WaitUntilElementBecomesStale(firstPageEmotes[0]);
+            //IReadOnlyList<IWebElement> lastPageEmotes = emoteWallPage.GetEmotes();
+            // Thread.Sleep(3000);
+            //you need to wait until the elements changed, before doing this
+
+          //  IReadOnlyList<IWebElement> lastPageElements = emoteWallPage.GetEmotes();
+            List<string> lastPageEmotes = emoteWallPage.GetEmoteStrings();
 
             IReadOnlyList<IWebElement> navigationBtns = emoteWallPage.GetPageNavigationBtns();
             emoteWallPage.NavigatePageAndWait(navigationBtns[navigationBtns.Count - 2]);
+           // emoteWallPage.WaitUntilElementBecomesStale(lastPageElements[0]);
 
-            IReadOnlyList<IWebElement> penultimatePageEmotes = emoteWallPage.GetEmotes();
+            //IReadOnlyList<IWebElement> penultimatePageEmotes = emoteWallPage.GetEmotes();
+            //  Thread.Sleep(3000);
+            List<string> penultimatePageEmotes = emoteWallPage.GetEmoteStrings();
+
 
             TEST_OUTPUT.WriteLine("last page" + lastPageEmotes.Count);
             TEST_OUTPUT.WriteLine("penultimate page" + penultimatePageEmotes.Count);
-            lastPageEmotes.ToList().ForEach(emote => TEST_OUTPUT.WriteLine("last page: " + emote.Text));
-            penultimatePageEmotes.ToList().ForEach(emote => TEST_OUTPUT.WriteLine("penultimate page: " + emote.Text));
+
+            lastPageEmotes.ForEach(emote => TEST_OUTPUT.WriteLine("last page: " + emote));
+            penultimatePageEmotes.ForEach(emote => TEST_OUTPUT.WriteLine("penultimate page: " + emote));
 
             Assert.False(lastPageEmotes.SequenceEqual(penultimatePageEmotes));
         }
+
+
 
         [Fact]
         public void WhenMovingToSecondPageTheButtonCountShouldNotChange() 
