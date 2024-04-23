@@ -10,29 +10,11 @@ using Xunit.Sdk;
 
 namespace _7tv_automation_tests.PageObjects
 {
-    public class UserProfilePage
+    public class UserProfilePage(IWebDriver driver, ITestOutputHelper testOutput) : BasePage(driver, testOutput)
     {
-
-        private IWebDriver _driver;
-        private ITestOutputHelper TEST_OUTPUT;
-
-        private const int PAGE_LOAD_TIME = 10;
-
-        private WebDriverWait waitPageLoad;
-
-        public string Url { get; } = "https://7tv.app/users/";
+        public override string Url { get; } = "https://7tv.app/users/";
 
         private readonly By loc_userOverview = By.ClassName("user-overview");
-
-
-        public UserProfilePage(IWebDriver driver, ITestOutputHelper testOutput)
-        {
-            _driver = driver;
-            TEST_OUTPUT = testOutput;
-
-            waitPageLoad = new WebDriverWait(_driver, TimeSpan.FromSeconds(PAGE_LOAD_TIME));
-        }
-
 
         public void GoTo(string profileID)
         {
@@ -40,12 +22,11 @@ namespace _7tv_automation_tests.PageObjects
         }
 
 
-
         public IWebElement GetUserOverview()
         {
             try
             {
-                IWebElement userOverview = waitPageLoad.Until(drv => drv.FindElement(loc_userOverview));
+                IWebElement userOverview = FindAfterPageLoad(loc_userOverview);
                 return userOverview;
             }
             catch
