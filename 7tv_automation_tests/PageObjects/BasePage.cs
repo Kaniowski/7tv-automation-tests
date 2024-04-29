@@ -1,13 +1,7 @@
 ﻿using _7tv_automation_tests.Extensions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace _7tv_automation_tests.PageObjects
 {
@@ -20,7 +14,7 @@ namespace _7tv_automation_tests.PageObjects
         public abstract string Url { get; }
 
 
-        protected ITestOutputHelper TEST_OUTPUT;
+        protected ITestOutputHelper _testOutput;
 
         protected WebDriverWait _waiterLong;
         protected WebDriverWait _waiterShort;
@@ -33,7 +27,7 @@ namespace _7tv_automation_tests.PageObjects
         public BasePage(IWebDriver newDriver, ITestOutputHelper testOutput)
         {
             _driver = newDriver;
-            TEST_OUTPUT = testOutput;
+            _testOutput = testOutput;
             _waiterPageLoad = new WebDriverWait(_driver, TimeSpan.FromSeconds(PAGE_LOAD_TIME));
             _waiterLong = new WebDriverWait(_driver, TimeSpan.FromSeconds(LONG_TIME));
             _waiterShort = new WebDriverWait(_driver, TimeSpan.FromSeconds(SHORT_TIME));

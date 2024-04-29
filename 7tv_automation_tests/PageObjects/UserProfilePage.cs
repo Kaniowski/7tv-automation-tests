@@ -1,12 +1,5 @@
-﻿using _7tv_automation_tests.Helpers;
-using _7tv_automation_tests.Tests;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.Extensions;
-using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
-using System.IO;
+﻿using OpenQA.Selenium;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace _7tv_automation_tests.PageObjects
 {
@@ -26,15 +19,15 @@ namespace _7tv_automation_tests.PageObjects
         {
             try
             {
-                IWebElement userOverview = FindAfterPageLoad(loc_userOverview);
+                IWebElement userOverview = FindAfterShortLoad(loc_userOverview);
                 return userOverview;
             }
             catch
             {
-                //if it times out, means you could not find the object, meaning it did not load
+                //if it times out, it means you could not find the object, i.e. it did not load
                 return null;
             }
-           
+
         }
 
 

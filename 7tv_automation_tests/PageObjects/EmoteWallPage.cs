@@ -1,13 +1,9 @@
 ﻿using _7tv_automation_tests.Extensions;
 using _7tv_automation_tests.Helpers;
-using _7tv_automation_tests.Tests;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
-using System.IO;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace _7tv_automation_tests.PageObjects
 {
@@ -18,16 +14,13 @@ namespace _7tv_automation_tests.PageObjects
 
         private const int MAX_REFRESH_COUNT = 10;
 
-        private readonly By loc_emoteSearchBar = By.XPath("//div[@class='text-input'][.//span[text()='Search']]//input[@type='text']");// [.//text()='Search']");
+        private readonly By loc_emoteSearchBox = By.XPath("//div[@class='text-input'][.//span[text()='Search']]//input[@type='text']");
         private readonly By loc_filterBtn = By.ClassName("search-filters-button");
-        private readonly By loc_emoteBtn = By.XPath("//div[@class='title-banner']");//why not just by class?
+        private readonly By loc_emoteBtn = By.XPath("//div[@class='title-banner']");
         private readonly By loc_pageNavigationBtn = By.ClassName("page-button");
 
         private readonly By loc_searchingInfo = By.ClassName("searching-title");
         private readonly By loc_noEmotesInfo = By.ClassName("no-emotes");
-
-        private readonly By loc_filterWidth = By.XPath("//div[@class='text-input'][.//span[text()='Ratio Width']]//input[@type='text']");
-        private readonly By loc_filterHeight = By.XPath("//div[@class='text-input'][.//span[text()='Ratio Height']]//input[@type='text']");
 
         private WebDriverWait waiterEmotesLoad;
         private WebDriverWait waiterSearchInfo;
@@ -48,11 +41,15 @@ namespace _7tv_automation_tests.PageObjects
         }
 
 
-        public IWebElement UseEmoteSearchBar(string searchQuery)
+        public IWebElement UseEmoteSearchBox(string searchQuery)
         {
-            IWebElement result= PageHelpers.UseAnySearchBar(_waiterPageLoad, searchQuery, loc_emoteSearchBar);
-            RefreshUntilLoad(loc_emoteBtn, waiterEmotesLoad, MAX_REFRESH_COUNT);
+            IWebElement result = PageHelpers.UseAnySearchBox(_waiterPageLoad, searchQuery, loc_emoteSearchBox);
             return result;
+        }
+
+        public void RefreshUntilEmotesLoad()
+        {
+            RefreshUntilLoad(loc_emoteBtn, waiterEmotesLoad, MAX_REFRESH_COUNT);
         }
 
 
@@ -60,7 +57,7 @@ namespace _7tv_automation_tests.PageObjects
         private void RefreshUntilLoad(By locToFind, WebDriverWait waiter, int maxRefreshCount = 10)
         {
             bool foundTheElement = false;
-            for(int i = 0; i < maxRefreshCount; i++)
+            for (int i = 0; i < maxRefreshCount; i++)
             {
                 try
                 {
@@ -70,23 +67,23 @@ namespace _7tv_automation_tests.PageObjects
                 }
                 catch (WebDriverTimeoutException e)
                 {
-                    TEST_OUTPUT.WriteLine("REFRESHING");
-                    TEST_OUTPUT.WriteLine(e.GetBaseException().Message);
+                    _testOutput.WriteLine("REFRESHING");
+                    _testOutput.WriteLine(e.GetBaseException().Message);
 
-                   _driver.Navigate().Refresh();
+                    _driver.Navigate().Refresh();
                     Thread.Sleep(3000);
                 };
             }
 
-            if(!foundTheElement)
+            if (!foundTheElement)
             {
                 throw new Exception($"The test timed out after it was unable to load the element, and refreshing {maxRefreshCount} times");
             }
         }
 
 
-
-        public IWebElement RefreshUntilError(int maxRefreshCount=10)
+        //refreshing can cause the emote wall to load infinitely
+        public IWebElement RefreshUntilError(int maxRefreshCount = 10)
         {
             IWebElement element = null;
             for (int i = 0; i < maxRefreshCount; i++)
@@ -97,12 +94,11 @@ namespace _7tv_automation_tests.PageObjects
                 try
                 {
                     element = _driver.ConfidentFind(waiterSearchInfo, loc_noEmotesInfo);
-                    //this one means it fizzled, can stop now
                     break;
                 }
                 catch (WebDriverTimeoutException e)
                 {
-                    TEST_OUTPUT.WriteLine(e.GetBaseException().Message);
+                    _testOutput.WriteLine(e.GetBaseException().Message);
                 };
 
                 try
@@ -114,7 +110,7 @@ namespace _7tv_automation_tests.PageObjects
                 }
                 catch (WebDriverTimeoutException e)
                 {
-                    TEST_OUTPUT.WriteLine(e.GetBaseException().Message);
+                    _testOutput.WriteLine(e.GetBaseException().Message);
                 };
             }
             return element;
@@ -125,7 +121,7 @@ namespace _7tv_automation_tests.PageObjects
         {
 
             IWebElement filterBtn = _driver.ConfidentFind(_waiterShort, loc_filterBtn);
-           
+
             filterBtn.Click();
         }
 
@@ -138,7 +134,7 @@ namespace _7tv_automation_tests.PageObjects
         }
 
         public IReadOnlyList<IWebElement> GetEmotes()
-        {            
+        {
             IReadOnlyList<IWebElement> emoteTitles = waiterEmotesLoad.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(loc_emoteBtn));
             return emoteTitles;
         }
@@ -153,7 +149,8 @@ namespace _7tv_automation_tests.PageObjects
 
         public void WaitUntilElementBecomesStale(IWebElement element)
         {
-            try{
+            try
+            {
                 waiterEmotesLoad.Until(ExpectedConditions.StalenessOf(element));
             }
             catch (WebDriverTimeoutException e)
@@ -180,10 +177,9 @@ namespace _7tv_automation_tests.PageObjects
         {
             IReadOnlyList<IWebElement> pageBtns = GetPageNavigationBtns();
 
-            return pageBtns[pageBtns.Count-1];
+            return pageBtns[pageBtns.Count - 1];
         }
 
-        //is this necessary?
         public void NavigateToLastEmotePage()
         {
             NavigatePageAndWait(GetLastPageNavigationBtn());

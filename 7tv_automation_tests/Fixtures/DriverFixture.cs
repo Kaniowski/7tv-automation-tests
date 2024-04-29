@@ -14,7 +14,7 @@ namespace _7tv_automation_tests.Fixtures
             new DriverManager().SetUpDriver(new ChromeConfig(), VersionResolveStrategy.MatchingBrowser);
 
             ChromeOptions options = new ChromeOptions();
-            // options.AddArgument("--headless=new");
+            options.AddArgument("--headless=new");
             driver = new ChromeDriver(options);
             driver.Manage().Window.Maximize();
 

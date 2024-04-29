@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using _7tv_automation_tests.Fixtures;
-using _7tv_automation_tests.Helpers;
+﻿using _7tv_automation_tests.Fixtures;
 using _7tv_automation_tests.PageObjects;
-using Xunit.Abstractions;
 using OpenQA.Selenium;
+using Xunit.Abstractions;
 
 namespace _7tv_automation_tests.Tests
 {
@@ -27,41 +21,30 @@ namespace _7tv_automation_tests.Tests
         {
             EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver, TEST_OUTPUT);
             emoteWallPage.GoTo();
-            //need to wait for the emotes to actually load ugh
             IReadOnlyList<IWebElement> firstPageEmotes = emoteWallPage.GetEmotes();
-            //click last page button, get the emotes
-            //click second to last pagebutton, get the emotes again
             emoteWallPage.NavigateToLastEmotePage();
             emoteWallPage.WaitUntilElementBecomesStale(firstPageEmotes[0]);
-            //IReadOnlyList<IWebElement> lastPageEmotes = emoteWallPage.GetEmotes();
-            // Thread.Sleep(3000);
-            //you need to wait until the elements changed, before doing this
-
-          //  IReadOnlyList<IWebElement> lastPageElements = emoteWallPage.GetEmotes();
+            Thread.Sleep(3000);//need to do this because of weird desync issues with staleness
             List<string> lastPageEmotes = emoteWallPage.GetEmoteStrings();
 
             IReadOnlyList<IWebElement> navigationBtns = emoteWallPage.GetPageNavigationBtns();
+            Assert.True(navigationBtns.Count >= 2);
             emoteWallPage.NavigatePageAndWait(navigationBtns[navigationBtns.Count - 2]);
-           // emoteWallPage.WaitUntilElementBecomesStale(lastPageElements[0]);
-
-            //IReadOnlyList<IWebElement> penultimatePageEmotes = emoteWallPage.GetEmotes();
-            //  Thread.Sleep(3000);
             List<string> penultimatePageEmotes = emoteWallPage.GetEmoteStrings();
 
 
-            TEST_OUTPUT.WriteLine("last page" + lastPageEmotes.Count);
-            TEST_OUTPUT.WriteLine("penultimate page" + penultimatePageEmotes.Count);
-
-            lastPageEmotes.ForEach(emote => TEST_OUTPUT.WriteLine("last page: " + emote));
-            penultimatePageEmotes.ForEach(emote => TEST_OUTPUT.WriteLine("penultimate page: " + emote));
+            //for debugging:
+            //TEST_OUTPUT.WriteLine("last page" + lastPageEmotes.Count);
+            //TEST_OUTPUT.WriteLine("penultimate page" + penultimatePageEmotes.Count);
+            //lastPageEmotes.ForEach(emote => TEST_OUTPUT.WriteLine("last page: " + emote));
+            //penultimatePageEmotes.ForEach(emote => TEST_OUTPUT.WriteLine("penultimate page: " + emote));
 
             Assert.False(lastPageEmotes.SequenceEqual(penultimatePageEmotes));
         }
 
 
-
         [Fact]
-        public void WhenMovingToSecondPageTheButtonCountShouldNotChange() 
+        public void WhenMovingToSecondPageTheButtonCountShouldNotChange()
         {
             EmoteWallPage emoteWallPage = new EmoteWallPage(_fixture.driver, TEST_OUTPUT);
             emoteWallPage.GoTo();
@@ -73,8 +56,6 @@ namespace _7tv_automation_tests.Tests
 
         }
 
-
-        //there are multiple weird behaviours here but this one should be enough to check for it
         [Fact]
         public void WhenChangingResolutionOnLastPageThePageShouldNotChange()
         {
@@ -82,11 +63,11 @@ namespace _7tv_automation_tests.Tests
             emoteWallPage.GoTo();
             emoteWallPage.NavigateToLastEmotePage();
 
-            bool initialLastPageBtnSelectedState= emoteWallPage.GetLastPageNavigationBtn().GetAttribute("selected") =="true";
+            bool initialLastPageBtnSelectedState = emoteWallPage.GetLastPageNavigationBtn().GetAttribute("selected") == "true";
             string initialLastPageBtnColor = emoteWallPage.GetLastPageNavigationBtn().GetCssValue("background-color");
 
             _fixture.driver.Manage().Window.Size = new System.Drawing.Size(720, 480);
-
+            Thread.Sleep(1000);//need to do this because changing the resolution desyncs it with the code and the element becomes stale
 
 
             bool finalLastPageBtnSelectedState = emoteWallPage.GetLastPageNavigationBtn().GetAttribute("selected") == "true";
